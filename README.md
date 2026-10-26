@@ -91,7 +91,9 @@ beautiful-pascal/
 │   ├── mathematical_audit.md       # Independent audit of clipping, MSNE, and PoA
 │   ├── parameter_evidence.md       # Parameter evidence audit, classifications & bounds
 │   ├── visualization_guide.md      # Detailed figure guide, interpretation & limitations
-│   └── PRESENTATION_GUIDE.md       # 5-7 min demonstration plan & viva Q&A
+│   ├── PRESENTATION_GUIDE.md       # Initial demonstration plan & viva Q&A
+│   ├── final_report.md             # Formal comprehensive academic course report
+│   └── final_presentation_guide.md # 5-7 min demonstration plan & 12 viva Q&As
 ├── src/cyber_investment_sim/       # Primary Python package
 │   ├── __init__.py                 # Package declaration
 │   ├── cli.py                      # Command-line interface parser
