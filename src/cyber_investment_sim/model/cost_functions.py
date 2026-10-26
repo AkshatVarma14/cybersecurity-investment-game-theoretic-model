@@ -22,22 +22,44 @@ class LinearCostFunction(CostFunction):
     """Linear cost function: C(x) = c * x."""
 
     def __init__(self, linear_factor: float = 1.0) -> None:
+        if linear_factor < 0.0:
+            raise ValueError(f"linear_factor must be non-negative, got {linear_factor}")
         self.linear_factor = linear_factor
 
     def evaluate(self, investment: float) -> float:
-        """Evaluate linear cost placeholder."""
-        # Mathematical implementation deferred to Stage 2
-        raise NotImplementedError("Mathematical formulation will be implemented in Stage 2.")
+        """Evaluate linear cost C(x) = c * x.
+
+        Args:
+            investment: Non-negative expenditure x >= 0.
+
+        Returns:
+            Calculated cost >= 0.
+        """
+        if investment < 0.0:
+            raise ValueError(f"investment must be non-negative, got {investment}")
+        return self.linear_factor * investment
 
 
 class ConvexCostFunction(CostFunction):
     """Convex cost function with diminishing returns: C(x) = c * x + gamma * x^2."""
 
     def __init__(self, linear_factor: float = 1.0, quadratic_factor: float = 0.01) -> None:
+        if linear_factor < 0.0:
+            raise ValueError(f"linear_factor must be non-negative, got {linear_factor}")
+        if quadratic_factor < 0.0:
+            raise ValueError(f"quadratic_factor must be non-negative, got {quadratic_factor}")
         self.linear_factor = linear_factor
         self.quadratic_factor = quadratic_factor
 
     def evaluate(self, investment: float) -> float:
-        """Evaluate convex cost placeholder."""
-        # Mathematical implementation deferred to Stage 2
-        raise NotImplementedError("Mathematical formulation will be implemented in Stage 2.")
+        """Evaluate convex cost C(x) = c * x + gamma * x^2.
+
+        Args:
+            investment: Non-negative expenditure x >= 0.
+
+        Returns:
+            Calculated cost >= 0.
+        """
+        if investment < 0.0:
+            raise ValueError(f"investment must be non-negative, got {investment}")
+        return (self.linear_factor * investment) + (self.quadratic_factor * (investment ** 2))
