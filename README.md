@@ -3,103 +3,240 @@
 [![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.14-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Academic Project](https://img.shields.io/badge/Academic-Game%20Theory%20Course-teal.svg)](#)
+[![Standard Library](https://img.shields.io/badge/Dependencies-Standard%20Library%20Only-success.svg)](#)
 
 ---
 
-## 1. Project Overview
-This project develops an academically grounded, mathematically rigorous simulation of strategic cybersecurity investment between competing organizations. 
+## 1. Project Overview & Academic Motivation
+In cybersecurity economics, organizations cannot optimize defense expenditure in isolation. When firms operate in the same market sector or share digital infrastructure, their security postures interact strategically:
+1. **Target-Shifting Deflection (Negative Externality):** Threat actors seeking vulnerabilities deflect attack traffic toward organizations with weaker security perimeters. Defensive investments by one firm impose heightened threat exposure on rival firms, triggering a **"Cyber Arms Race"** characterized by strategic over-investment.
+2. **Interdependent Contagion (Positive Externality):** Shared supply chains, APIs, and partner networks allow breaches to cascade across organizational boundaries. One firm's investment protects its peers from contagion, giving rise to classic **"Free-Riding"** incentives and market-wide under-investment.
+3. **Independent Baseline (Control):** Standalone risk where each firm's breach likelihood depends exclusively on its own defensive perimeter, serving as an empirical benchmark.
 
-Unlike traditional isolated security risk models (such as standalone Gordon-Loeb analyses), real-world enterprises do not make security investments in a vacuum. Organizations face strategic interdependencies:
-- **Target Substitution / Deflection:** Threat actors frequently pivot from heavily fortified targets toward more vulnerable rivals in the same industry sector.
-- **Interdependent Security & Contagion:** Shared supply chains, standardized platforms, and communication protocols create security externalities where one firm's underinvestment threatens the broader ecosystem.
-- **Strategic Underinvestment & Free-Riding:** When defensive efforts create positive spillovers, private incentives may diverge from social welfare, resulting in underinvestment and a quantifiable **Price of Anarchy (PoA)**.
-
-This software models these interactions as a non-cooperative game, computing **Pure and Mixed Strategy Nash Equilibria**, best-response functions, social planner benchmarks, and comparative statics.
+This project implements a deterministic, academically explainable simulation of these strategic dilemmas using non-cooperative game theory. It computes **Normal-Form Payoff Matrices**, **Pure and Mixed Strategy Nash Equilibria**, **Social Planner Optima**, the **Price of Anarchy (PoA)**, and the **Price of Stability (PoS)**.
 
 ---
 
-## 2. Key Design Principles
-- **Clean Standard-Library First:** Core simulation and equilibrium solvers operate on pure Python with zero required third-party packages.
-- **Deterministic & Verifiable:** Idempotent mathematical computations ensure 100% reproducible academic results.
-- **Type-Safe & Modular:** Strong typing with `dataclasses` and Python type hints throughout.
-- **Terminal & VS Code Friendly:** Designed for rapid local execution via Windows PowerShell or VS Code debug targets.
+## 2. Mathematical Formulation
+
+### 2.1 Net Expected Utility Function
+For firm $i \in \{1, 2\}$ with rival $-i$:
+$$u_i(x_i, x_{-i}) = \Pi_i^0 - P_i(x_i, x_{-i}) \cdot L_i - C_i(x_i)$$
+where:
+- $\Pi_i^0 \ge 0$: Gross operating profit / baseline asset valuation unaffected by security breach.
+- $L_i > 0$: Financial and reputational loss conditional on a successful breach.
+- $x_i \in [0, B_i]$: Defensive cybersecurity investment expenditure up to budget $B_i$.
+- $C_i(x_i) = c_i x_i + \gamma_i x_i^2$: Direct investment cost (linear cost $c_i > 0$, optional convex penalty $\gamma_i \ge 0$).
+- $P_i(x_i, x_{-i}) \in [0, 1]$: Effective breach probability under strategic interaction.
 
 ---
 
-## 3. Directory Structure
+### 2.2 Model Variant A: Target-Shifting Competition (Deflection / Negative Externality)
+Following Tullock contest functions (Tullock 1980; Hausken 2006; Böhme 2010):
+- Direct perimeter vulnerability: $g_i(x_i) = \frac{1}{\alpha x_i + 1}$.
+- Target deflection factor governed by attacker opportunism $\theta \in [0, 1]$:
+  $$F_i(x_i, x_{-i}; \theta) = (1 - \theta) + \theta \cdot \left[ \frac{2 \, e^{-\alpha x_i}}{e^{-\alpha x_i} + e^{-\alpha x_{-i}}} \right]$$
+- Effective breach probability:
+  $$P_i(x_i, x_{-i}) = \min\left(1.0, \; v_i^0 \cdot g_i(x_i) \cdot F_i(x_i, x_{-i}; \theta)\right)$$
+
+*Key Property:* $\frac{\partial P_i}{\partial x_{-i}} > 0$ for $x_{-i} < x_{-i}^{\text{sat}}$. Defending firm $-i$ deflects threat volume onto firm $i$.
+
+---
+
+### 2.3 Model Variant B: Interdependent Security (Contagion / Positive Externality)
+Following Kunreuther & Heal (2003) and Gordon & Loeb (2002):
+- Direct breach vulnerability: $p_i^{\text{direct}}(x_i) = \frac{v_i^0}{\alpha x_i + 1}$.
+- Dual survival condition under independent direct attack and partner contagion risk $q \in [0, 1]$:
+  $$\Pr(\text{No Breach}) = \Big(1 - p_i^{\text{direct}}(x_i)\Big) \cdot \Big(1 - q \cdot p_{-i}^{\text{direct}}(x_{-i})\Big)$$
+- Effective breach probability:
+  $$P_i(x_i, x_{-i}) = 1 - \Big[1 - p_i^{\text{direct}}(x_i)\Big] \cdot \Big[1 - q \cdot p_{-i}^{\text{direct}}(x_{-i})\Big]$$
+
+*Key Property:* $\frac{\partial P_i}{\partial x_{-i}} < 0$. Defending partner $-i$ reduces firm $i$'s exposure to contagion.
+
+---
+
+### 2.4 Model Variant C: Independent Perimeter Benchmark
+$$P_i(x_i) = \frac{v_i^0}{\alpha x_i + 1}$$
+Cross-firm externalities are absent ($\theta = 0, q = 0$). Decentralized Nash optimization aligns with the Social Optimum ($PoA = 1.0000$).
+
+---
+
+### 2.5 Efficiency & Social Welfare Benchmarks
+- **Utilitarian Social Welfare:** $W(s_1, s_2) = u_1(s_1, s_2) + u_2(s_1, s_2)$.
+- **Social Optimum:** $s^{SO} = \arg\max_{(s_1, s_2)} W(s_1, s_2)$.
+- **Price of Anarchy (Worst-Case Nash):** $PoA = \frac{W(s^{SO})}{\min_{s^* \in \mathcal{E}} W(s^*)}$.
+- **Price of Stability (Best-Case Nash):** $PoS = \frac{W(s^{SO})}{\max_{s^* \in \mathcal{E}} W(s^*)}$.
+- **Welfare Loss Gap:** $\Delta W = W(s^{SO}) - \min_{s^* \in \mathcal{E}} W(s^*)$.
+
+---
+
+## 3. Directory Layout & Architecture
 
 ```text
 beautiful-pascal/
-├── .gitignore                      # Ignore patterns for venv, caches, and artifacts
-├── pyproject.toml                  # Python package metadata (PEP 517/518/621)
-├── requirements.txt                # Optional dependencies (e.g. matplotlib)
-├── main.py                         # Top-level entry point runner
-├── README.md                       # Project overview and academic summary
-├── AGENTS.md                       # Guidelines and constraints for AI agents
-├── PROJECT_INSTRUCTIONS.md         # Detailed setup instructions & commands
+├── .gitignore                      # Git exclusion rules for caches, artifacts, and venv
+├── pyproject.toml                  # PEP 517/518 packaging metadata
+├── requirements.txt                # Optional dependencies (matplotlib for optional plotting)
+├── main.py                         # Root execution launcher
+├── README.md                       # Academic project overview, equations, and guide
+├── AGENTS.md                       # Developer guidelines and technical constraints
+├── PROJECT_INSTRUCTIONS.md         # Windows PowerShell and VS Code operating guide
 ├── .vscode/                        # Example IDE configurations
-│   ├── launch.json.example         # VS Code debugger configurations
-│   └── settings.json.example       # VS Code workspace settings
-├── docs/                           # Documentation placeholders
-│   ├── architecture.md             # System design and modularity
-│   ├── game_theory_formulation.md  # Payoff matrices, Nash concepts, PoA
-│   └── model_specification.md      # Mathematical vulnerability and cost functions
-├── src/
-│   └── cyber_investment_sim/       # Primary Python package
-│       ├── __init__.py             # Package declaration
-│       ├── config.py               # Simulation configuration dataclasses
-│       ├── cli.py                  # CLI command parser
-│       ├── model/                  # Economic & cyber primitives
-│       │   ├── __init__.py
-│       │   ├── organization.py     # Organization profile & state
-│       │   ├── cost_functions.py   # Investment cost curves
-│       │   └── breach_model.py     # Breach probability & externality models
-│       ├── game/                   # Game-theoretic foundations
-│       │   ├── __init__.py
-│       │   ├── normal_form.py      # Normal-form matrix representation
-│       │   ├── solver.py           # Nash equilibrium & best-response solver
-│       │   └── social_optimum.py   # Social welfare & Price of Anarchy
-│       ├── simulation/             # Simulation orchestrators
-│       │   ├── __init__.py
-│       │   ├── engine.py           # Single-run game orchestrator
-│       │   └── sensitivity.py      # Parameter sweep / comparative statics
-│       └── report/                 # Output generation
-│           ├── __init__.py
-│           ├── formatter.py        # Pretty-printed ASCII payoff matrices
-│           └── export.py           # JSON/CSV file exporters
-└── tests/                          # Automated unit test suite
+│   ├── launch.json.example         # VS Code debugger profiles
+│   └── settings.json.example       # VS Code interpreter and test settings
+├── docs/                           # Academic documentation
+│   ├── architecture.md             # System design, interfaces, and data flow
+│   ├── game_theory_formulation.md  # Normal-form definitions, Nash solvers, and PoA/PoS
+│   ├── model_specification.md      # Mathematical vulnerability functions and proofs
+│   ├── mathematical_audit.md       # Independent audit of clipping, MSNE, and PoA
+│   └── PRESENTATION_GUIDE.md       # 5-7 min demonstration plan & viva Q&A
+├── src/cyber_investment_sim/       # Primary Python package
+│   ├── __init__.py                 # Package declaration
+│   ├── cli.py                      # Command-line interface parser
+│   ├── config.py                   # Immutable configuration dataclasses with validation
+│   ├── model/                      # Economic primitives
+│   │   ├── __init__.py
+│   │   ├── organization.py         # Organization entity profile
+│   │   ├── cost_functions.py       # Linear and convex cost curves
+│   │   └── breach_model.py         # Target-shifting, contagion, and independent models
+│   ├── game/                       # Game-theoretic foundations
+│   │   ├── __init__.py
+│   │   ├── normal_form.py          # Discrete normal-form game and payoff outcome
+│   │   ├── solver.py               # Pure & mixed Nash equilibrium solver
+│   │   └── social_optimum.py       # Social welfare analyzer, PoA, and PoS
+│   ├── simulation/                 # Simulation orchestration
+│   │   ├── __init__.py
+│   │   ├── engine.py               # Single scenario runner & model comparator
+│   │   └── sensitivity.py          # Comparative statics / parameter sweeps
+│   └── report/                     # Reporting & presentation
+│       ├── __init__.py
+│       ├── formatter.py            # Pretty-printed ASCII payoff matrices & tables
+│       └── export.py               # JSON and CSV export handlers
+└── tests/                          # Automated unit test suite (46 tests)
     ├── __init__.py
-    ├── test_config.py              # Configuration validation tests
-    ├── test_breach_model.py        # Breach probability mathematical tests
-    ├── test_normal_form.py         # Payoff matrix construction tests
-    └── test_solver.py              # Nash equilibrium solver verification tests
+    ├── test_audit.py               # Independent mathematical audit & regression tests
+    ├── test_breach_model.py        # Probability bounds and externality derivative tests
+    ├── test_config.py              # Configuration dataclass validation tests
+    ├── test_cost_functions.py      # Cost function correctness and validation tests
+    ├── test_normal_form.py         # Normal-form matrix extraction & welfare tests
+    ├── test_sensitivity.py         # Comparative statics sweep engine tests
+    ├── test_simulation_engine.py   # Multi-model simulation engine tests
+    ├── test_social_optimum.py      # Social welfare and PoA benchmark tests
+    └── test_solver.py              # Pure and mixed Nash equilibrium verification tests
 ```
 
 ---
 
 ## 4. Quick Start (Windows PowerShell)
 
+### 4.1 Environment Setup
 ```powershell
 # 1. Navigate to project root
 cd C:\Users\aksha\Documents\antigravity\beautiful-pascal
 
-# 2. Create and activate a virtual environment
+# 2. Create isolated virtual environment
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
 
-# 3. View CLI help
+# 3. Activate virtual environment
+.\.venv\Scripts\Activate.ps1
+```
+
+### 4.2 Running Simulations
+```powershell
+# Display help and available options
 python main.py --help
 
-# 4. Run unit test suite
+# Run default single-scenario simulation (Target-Shifting)
+python main.py
+
+# Run Contagion model scenario
+python main.py --model contagion
+
+# Run side-by-side comparison across all 3 models under identical parameters
+python main.py --compare-models
+
+# Run sensitivity analysis sweeping externality parameter (theta / q)
+python main.py --model target_shifting --sweep-externality
+python main.py --model contagion --sweep-externality
+
+# Run sensitivity analysis sweeping security efficiency alpha
+python main.py --model target_shifting --sweep-alpha
+
+# Run in 2x2 binary mode (None vs High) for analytical mixed Nash equilibrium
+python main.py --model target_shifting --mode-2x2
+```
+
+### 4.3 Running Unit Tests
+```powershell
+# Execute the complete automated unit test suite (46 tests)
 python -m unittest discover -s tests -v
 ```
 
 ---
 
-## 5. Development Roadmap
-- [x] **Stage 1 (Current):** Project architecture initialization, documentation, package skeleton, and testing scaffold.
-- [ ] **Stage 2:** Core mathematical models: Gordon-Loeb breach probabilities, contest functions, and investment cost curves.
-- [ ] **Stage 3:** Game-theoretic solvers: 2-player discrete normal-form matrix, pure/mixed Nash equilibria, and Pareto social optimum.
-- [ ] **Stage 4:** Simulation engine and sensitivity analysis (varying vulnerability, budget, and contagion factors).
-- [ ] **Stage 5:** Console reporting, academic ASCII payoff tables, and exportable reports.
-- [ ] **Stage 6:** Final verification against textbook analytical solutions and course presentation preparation.
+## 5. Sample Outputs & Verified Results
+
+### 5.1 Cross-Model Comparative Analysis (`python main.py --compare-models`)
+```text
+==========================================================================================
+ CROSS-MODEL COMPARATIVE ANALYSIS (Side-by-Side Under Identical Parameters)
+==========================================================================================
+Model Variant          | Nash Profile     | Nash W     | Social Opt       | Opt W      | PoA      | Gap
+------------------------------------------------------------------------------------------------------------
+TARGET_SHIFTING        | (High, High)     |  1666.67   | (Medium, Medium) |  1671.43   | 1.0029   |    4.76
+CONTAGION              | (Medium, Medium) |  1583.27   | (High, High)     |  1608.89   | 1.0162   |   25.62
+INDEPENDENT            | (Medium, Medium) |  1671.43   | (Medium, Medium) |  1671.43   | 1.0000   |    0.00
+==========================================================================================
+Academic Note: Target-shifting exhibits strategic over-investment (defensive escalation),
+whereas contagion exhibits strategic under-investment due to free-riding spillovers.
+==========================================================================================
+```
+
+### 5.2 Single-Scenario Normal-Form Matrix (`python main.py --model target_shifting`)
+```text
+Normal-Form Payoff Matrix (Firm 1 Payoff, Firm 2 Payoff):
+Firm 1 \ Firm 2  | None               | Low                | Medium             | High
+----------------------------------------------------------------------------------------------------
+None             | ( 600.0,  600.0) | ( 500.0,  846.5) | ( 500.0,  884.2) | ( 500.0,  866.2)
+Low              | ( 846.5,  500.0) | ( 797.2,  797.2) | ( 747.9,  867.4) | ( 712.4,  865.1)
+Medium           | ( 884.2,  500.0) | ( 867.4,  747.9) | ( 835.7,  835.7) | ( 787.2,  861.6)
+High             | ( 866.2,  500.0) | ( 865.1,  712.4) | ( 861.6,  787.2) | ( 833.3,  833.3)
+----------------------------------------------------------------------------------------------------
+Equilibrium Analysis:
+ -> Pure Strategy Nash Equilibria Found: 1
+    * Profile: (Firm 1=High [x1=100.0], Firm 2=High [x2=100.0])
+      Payoffs: U1=833.33, U2=833.33 | Breach Probs: P1=0.133, P2=0.133
+----------------------------------------------------------------------------------------------------
+Social Welfare & Inefficiency Benchmarks:
+ -> Social Optimum Profile: (Firm 1=Medium [x1=50.0], Firm 2=Medium [x2=50.0])
+    Maximal Welfare W_SO = 1671.43
+ -> Price of Anarchy (PoA): 1.0029
+ -> Price of Stability (PoS): 1.0029
+ -> Welfare Loss Gap (W_SO - min W_Nash): 4.76
+```
+
+---
+
+## 6. Key Features & Implementation Highlights
+- **100% Python Standard Library:** Core simulation, normal-form game construction, Nash equilibrium solvers, sensitivity analysis sweeps, and ASCII formatters require zero external packages.
+- **Strictly Deterministic:** Fully reproducible calculations with zero random number seeds or floating-point non-determinism.
+- **Multi-Equilibrium Detection:** Identifies all pure Nash equilibria, correctly computing both the Price of Anarchy (worst-case Nash) and the Price of Stability (best-case Nash).
+- **Exact Analytical MSNE:** Derives closed-form mixed strategy Nash equilibria for $2 \times 2$ action spaces using the indifference principle.
+- **Robust Boundary Handling:** Formally handles negative welfare regimes and games with no pure Nash equilibria without spurious zero-gap reports.
+
+---
+
+## 7. Model Assumptions and Known Limitations
+
+> [!NOTE]
+> The simulation output reflects theoretical microeconomic equilibria under stylized non-cooperative game theory assumptions. It is not empirical telemetry from corporate production networks.
+
+1. **Discrete Strategy Approximations:** Primary games evaluate finite discrete tiers (`None: $0`, `Low: $25`, `Medium: $50`, `High: $100`). Continuous best-response curves may feature intermediate optimal investment points.
+2. **Probability Saturation Boundary ($x_{-i}^{\text{sat}}$):** In the target-shifting model, an undefended firm facing high rival fortification ($x_i = 0, x_{-i} \ge x_{-i}^{\text{sat}} \approx 22$) reaches certainty of breach ($P_i = 1.0$). In this saturated region, marginal deflection $\frac{\partial P_i}{\partial x_{-i}}$ vanishes because probability cannot exceed $1.0$.
+3. **Information Completeness:** The game assumes complete information: each organization accurately observes competitor asset exposure $L_i$ and baseline vulnerability $v_i^0$.
+4. **Static Single-Shot Interaction:** The normal-form game models simultaneous investment decisions. Dynamic multi-period repeated games or adaptive attacker retaliation are not modeled in the core game.
+
+---
+
+## 8. License & Academic Attribution
+Developed as an academic term project for Applied Game Theory. Distributed under the MIT License.
