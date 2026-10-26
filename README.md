@@ -138,7 +138,7 @@ beautiful-pascal/
 ### 4.1 Environment Setup
 ```powershell
 # 1. Navigate to project root
-cd C:\Users\aksha\Documents\antigravity\beautiful-pascal
+cd cybersecurity-investment-game
 
 # 2. Create isolated virtual environment
 python -m venv .venv

@@ -18,7 +18,7 @@
 ### 2.1 Clone / Open Workspace
 Open Windows PowerShell and navigate to the project directory:
 ```powershell
-cd C:\Users\aksha\Documents\antigravity\beautiful-pascal
+cd cybersecurity-investment-game
 ```
 
 ### 2.2 Create Virtual Environment

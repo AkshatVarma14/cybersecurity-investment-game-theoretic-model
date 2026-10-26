@@ -73,7 +73,7 @@ For a $2 \times 2$ game with strategy sets $S_1 = \{A_1, B_1\}$ and $S_2 = \{A_2
 
 ### Audit 4: Numerical Reproducibility of Sample Figures
 
-Independent execution of [`SimulationEngine`](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/src/cyber_investment_sim/simulation/engine.py#L42-L148) verified the following exact values:
+Independent execution of `SimulationEngine` (`src/cyber_investment_sim/simulation/engine.py`) verified the following exact values:
 
 #### Target-Shifting Competition:
 - Nash Equilibrium: `(High, High)` [$x_1=100, x_2=100$]

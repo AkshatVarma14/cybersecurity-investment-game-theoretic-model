@@ -144,4 +144,4 @@ While initial benchmark models feature symmetric firms ($L_1 = L_2, v_1^0 = v_2^
    - Reflects organizational complexity, scarce security engineering talent, and diminishing marginal operational capacity as expenditure expands.
    - Dampens excessive escalation in target-shifting arms races, shifting equilibria from boundary $(\text{High}, \text{High})$ to interior $(\text{Medium}, \text{Medium})$ or coordination profiles.
 
-For detailed empirical context, baseline values, literature classifications, and bounds validation, see [parameter_evidence.md](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/docs/parameter_evidence.md).
+For detailed empirical context, baseline values, literature classifications, and bounds validation, see [parameter_evidence.md](parameter_evidence.md).

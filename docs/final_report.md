@@ -34,7 +34,7 @@ The primary objectives and contributions of this project are:
 2. **Exhaustive Equilibrium Solvers:** Implement exhaustive normal-form bimatrix solvers that identify all Pure Strategy Nash Equilibria (PSNE) without local-optimum trapping, compute closed-form Mixed Strategy Nash Equilibria (MSNE) for $2 \times 2$ action spaces via the indifference principle, and evaluate social efficiency.
 3. **Inefficiency Metrics:** Compute utilitarian Social Welfare ($W$), the Price of Anarchy ($PoA$), the Price of Stability ($PoS$), and the absolute Welfare Loss Gap ($\Delta W$) with robust handling of non-standard regimes (multiple equilibria, empty equilibrium sets, and non-positive welfare).
 4. **Empirical Evidence Audit & Parameter Robustness:** Provide an evidence audit cataloging all 10 model parameters against peer-reviewed economic literature (Gordon-Loeb 2002; Kunreuther-Heal 2003; Tullock 1980; Böhme 2010), alongside robustness sweeps exploring asset asymmetry ($L_1 \ne L_2$), initial vulnerability asymmetry ($v_1^0 \ne v_2^0$), and convex cost friction ($\gamma$).
-5. **Deterministic, Headless Visualizer:** Deliver reproducible, publication-grade figures (300 DPI PNG and vector SVG) with full documentation in [visualization_guide.md](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/docs/visualization_guide.md).
+5. **Deterministic, Headless Visualizer:** Deliver reproducible, publication-grade figures (300 DPI PNG and vector SVG) with full documentation in [visualization_guide.md](visualization_guide.md).
 
 ---
 
@@ -249,32 +249,32 @@ Introducing organizational friction $C(x) = x + \gamma x^2$ demonstrates how imp
 All 6 figures are rendered deterministically using the headless `SimulationVisualizer` into the `figures/` directory.
 
 ### Figure 1: Normal-Form Payoff Matrix — Target-Shifting Competition
-- **Artifact:** [`figures/fig1_payoff_matrix.png`](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/figures/fig1_payoff_matrix.png) (and [`.svg`](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/figures/fig1_payoff_matrix.svg))
+- **Artifact:** [`figures/fig1_payoff_matrix.png`](../figures/fig1_payoff_matrix.png) (and [`.svg`](../figures/fig1_payoff_matrix.svg))
 - **Description:** Displays the $4 \times 4$ discrete payoff matrix. Green emerald shading highlights the unique pure Nash equilibrium at $(\text{High}, \text{High})$ ($u_1 = u_2 = 833.3$), while sky-blue dashed border indicates the Social Optimum at $(\text{Medium}, \text{Medium})$ ($u_1 = u_2 = 835.7$).
 - **Economic Interpretation:** Visually demonstrates the "Cyber Arms Race": despite $(\text{Medium}, \text{Medium})$ yielding strictly higher net utility, defensive opportunism drives mutual over-spending.
 
 ### Figure 2: Cross-Model Comparative Analysis
-- **Artifact:** [`figures/fig2_model_comparison.png`](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/figures/fig2_model_comparison.png) (and [`.svg`](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/figures/fig2_model_comparison.svg))
+- **Artifact:** [`figures/fig2_model_comparison.png`](../figures/fig2_model_comparison.png) (and [`.svg`](../figures/fig2_model_comparison.svg))
 - **Description:** Panel A compares aggregate defensive spend ($x_1 + x_2$) between Nash and Social Optimum; Panel B compares aggregate welfare and annotates the Price of Anarchy.
 - **Economic Interpretation:** Directly contrasts over-investment in target shifting ($+\$100$) against under-investment in contagion ($-\$100$) and alignment in the independent baseline.
 
 ### Figure 3: Sensitivity to Cybersecurity Control Efficiency ($\alpha$)
-- **Artifact:** [`figures/fig3_alpha_sensitivity.png`](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/figures/fig3_alpha_sensitivity.png) (and [`.svg`](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/figures/fig3_alpha_sensitivity.svg))
+- **Artifact:** [`figures/fig3_alpha_sensitivity.png`](../figures/fig3_alpha_sensitivity.png) (and [`.svg`](../figures/fig3_alpha_sensitivity.svg))
 - **Description:** Panel A charts equilibrium investment branches and highlights the coordination zone at $\alpha = 0.10$; Panel B plots the resulting spike in the Price of Anarchy ($PoA = 1.0228$) and Welfare Loss Gap ($\Delta W = \$39.39$).
 - **Economic Interpretation:** Confirms that intermediate technological productivity maximizes coordination friction and potential welfare destruction.
 
 ### Figure 4: Sensitivity to Supply-Chain Contagion Risk ($q$)
-- **Artifact:** [`figures/fig4_contagion_externality.png`](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/figures/fig4_contagion_externality.png) (and [`.svg`](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/figures/fig4_contagion_externality.svg))
+- **Artifact:** [`figures/fig4_contagion_externality.png`](../figures/fig4_contagion_externality.png) (and [`.svg`](../figures/fig4_contagion_externality.svg))
 - **Description:** Panel A plots Social Optimum vs Nash welfare with shaded free-rider inefficiency fill; Panel B plots monotonic expansion of $\Delta W$ ($0.0 \to \$56.01$).
 - **Economic Interpretation:** Illustrates that without regulatory intervention or contractual standards, increased ecosystem interdependence directly expands market failure.
 
 ### Figure 5: Robustness Analysis: Asymmetric Asset Loss Exposure ($L_1 \ne L_2$)
-- **Artifact:** [`figures/fig5_asymmetric_loss.png`](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/figures/fig5_asymmetric_loss.png) (and [`.svg`](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/figures/fig5_asymmetric_loss.svg))
+- **Artifact:** [`figures/fig5_asymmetric_loss.png`](../figures/fig5_asymmetric_loss.png) (and [`.svg`](../figures/fig5_asymmetric_loss.svg))
 - **Description:** Panel A plots investment divergence between Enterprise ($L_1$) and Vendor ($L_2 = 300$); Panel B plots the resulting welfare loss gap.
 - **Economic Interpretation:** Shows that the enterprise is forced to unilaterally subsidize systemic defense ($x_1 = 100$) while the vendor free-rides at $x_2 = 50$.
 
 ### Figure 6: Robustness Analysis: Convex Cost Friction ($\gamma$)
-- **Artifact:** [`figures/fig6_convex_cost.png`](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/figures/fig6_convex_cost.png) (and [`.svg`](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/figures/fig6_convex_cost.svg))
+- **Artifact:** [`figures/fig6_convex_cost.png`](../figures/fig6_convex_cost.png) (and [`.svg`](../figures/fig6_convex_cost.svg))
 - **Description:** Panel A charts equilibrium transitions across $\gamma$, highlighting coordination zones at $\gamma = 0.005$ and $\gamma = 0.04$; Panel B illustrates the divergence between $PoA$ ($1.0509$) and $PoS$ ($1.0000$).
 - **Economic Interpretation:** Demonstrates that cost friction counteracts escalation, transforming an arms race into a coordination game where optimal defense is achievable ($PoS = 1.0000$) but subject to coordination failure risk.
 
@@ -283,7 +283,7 @@ All 6 figures are rendered deterministically using the headless `SimulationVisua
 ## 12. Limitations, Ethical Considerations, and Threats to Validity
 
 1. **Stylized Microeconomic Models vs Empirical Measurement:**
-   As emphasized in [parameter_evidence.md](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/docs/parameter_evidence.md), simulation outputs reflect theoretical non-cooperative equilibria. Parameters are grounded in academic literature forms (Gordon-Loeb, Kunreuther-Heal, Tullock) and normalized for numerical analysis, but they do not represent empirical measurements of live production networks or telemetry.
+   As emphasized in [parameter_evidence.md](parameter_evidence.md), simulation outputs reflect theoretical non-cooperative equilibria. Parameters are grounded in academic literature forms (Gordon-Loeb, Kunreuther-Heal, Tullock) and normalized for numerical analysis, but they do not represent empirical measurements of live production networks or telemetry.
 2. **Discrete Action Tiers:**
    Strategy spaces evaluate finite discrete tiers (`None`, `Low`, `Medium`, `High`). While realistic for maturity frameworks, continuous intermediate optimal investments may exist between discrete tiers.
 3. **Static Single-Shot Framing:**
