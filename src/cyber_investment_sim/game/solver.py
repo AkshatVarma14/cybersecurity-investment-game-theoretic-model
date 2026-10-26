@@ -34,14 +34,20 @@ class EquilibriumResult:
         """Check if exactly one pure strategy Nash equilibrium exists."""
         return len(self.pure_strategy_equilibria) == 1
 
+    @property
+    def has_multiple_pure_equilibria(self) -> bool:
+        """Check if more than one pure strategy Nash equilibrium exists."""
+        return len(self.pure_strategy_equilibria) > 1
+
 
 class NashEquilibriumSolver:
     """Solver for identifying pure and mixed strategy Nash equilibria.
 
-    Features:
-        - Exhaustive best-response calculation for arbitrary N x M finite games.
+    Mathematical Features:
+        - Exhaustive best-response calculation for arbitrary N x M finite normal-form games.
         - Identification of all Pure Strategy Nash Equilibria (PSNE).
-        - Analytical derivation of Mixed Strategy Nash Equilibrium (MSNE) for 2x2 games.
+        - Analytical derivation of Mixed Strategy Nash Equilibrium (MSNE) for 2x2 games
+          using the indifference principle.
     """
 
     def __init__(self, game: NormalFormGame, tolerance: float = 1e-7) -> None:
@@ -111,14 +117,31 @@ class NashEquilibriumSolver:
     def compute_mixed_equilibrium_2x2(self) -> Optional[Tuple[Dict[str, float], Dict[str, float]]]:
         """Compute mixed strategy Nash equilibrium for 2x2 games using indifference conditions.
 
-        Let S_1 = {s1_1, s1_2} and S_2 = {s2_1, s2_2}.
-        P1 chooses s1_1 with probability p.
-        P2 chooses s2_1 with probability q.
+        Mathematical Derivation:
+            Let S_1 = {s1_1, s1_2} and S_2 = {s2_1, s2_2}.
+            Player 1 plays s1_1 with probability p, s1_2 with probability 1-p.
+            Player 2 plays s2_1 with probability q, s2_2 with probability 1-q.
 
-        P1 indifference: E[u1(s1_1)] = E[u1(s1_2)]
-            q * u1(1,1) + (1-q) * u1(1,2) = q * u1(2,1) + (1-q) * u1(2,2)
-        P2 indifference: E[u2(s2_1)] = E[u2(s2_2)]
-            p * u2(1,1) + (1-p) * u2(2,1) = p * u2(1,2) + (1-p) * u2(2,2)
+            For Player 1 to be indifferent:
+                E[u1(s1_1, q)] = E[u1(s1_2, q)]
+                q * u1(1,1) + (1-q) * u1(1,2) = q * u1(2,1) + (1-q) * u1(2,2)
+                q * [(u1(1,1) - u1(2,1)) - (u1(1,2) - u1(2,2))] = u1(2,2) - u1(1,2)
+                q* = (u1(2,2) - u1(1,2)) / [(u1(1,1) - u1(2,1)) - (u1(1,2) - u1(2,2))]
+
+            For Player 2 to be indifferent:
+                E[u2(p, s2_1)] = E[u2(p, s2_2)]
+                p * u2(1,1) + (1-p) * u2(2,1) = p * u2(1,2) + (1-p) * u2(2,2)
+                p * [(u2(1,1) - u2(1,2)) - (u2(2,1) - u2(2,2))] = u2(2,2) - u2(2,1)
+                p* = (u2(2,2) - u2(2,1)) / [(u2(1,1) - u2(1,2)) - (u2(2,1) - u2(2,2))]
+
+        Admissibility & Degeneracy Rules:
+            1. Zero Denominator: Occurs when payoff differences across opponent actions are
+               identical (e.g. strictly dominant strategy or degenerate constant payoffs).
+               In this case, no isolated interior mixed Nash equilibrium exists; returns None.
+            2. Simplex Bounds: If p* or q* lies outside [0, 1] (modulo tolerance), no mixed
+               equilibrium exists on this support; returns None.
+            3. Degenerate Continua: In weakly dominant games where an entire edge is indifferent,
+               isolated point MSNE is not defined; returns None.
         """
         if len(self.game.strategies_1) != 2 or len(self.game.strategies_2) != 2:
             return None
@@ -137,12 +160,10 @@ class NashEquilibriumSolver:
         u2_22 = self.game.get_outcome(s1_2, s2_2).utility_2
 
         # Denominator for q (Player 2's probability):
-        # q * [(u1_11 - u1_21) - (u1_12 - u1_22)] = u1_22 - u1_12
         denom_q = (u1_11 - u1_21) - (u1_12 - u1_22)
         num_q = u1_22 - u1_12
 
         # Denominator for p (Player 1's probability):
-        # p * [(u2_11 - u2_12) - (u2_21 - u2_22)] = u2_22 - u2_21
         denom_p = (u2_11 - u2_12) - (u2_21 - u2_22)
         num_p = u2_22 - u2_21
 

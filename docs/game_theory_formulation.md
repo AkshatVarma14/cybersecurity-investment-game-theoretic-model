@@ -91,9 +91,18 @@ $$W(s_1, s_2) = u_1(s_1, s_2) + u_2(s_1, s_2)$$
 ### 5.2 Social Optimum (Cooperative Benchmark)
 $$(s_1^{SO}, s_2^{SO}) = \arg\max_{(s_1, s_2) \in S_1 \times S_2} W(s_1, s_2)$$
 
-### 5.3 Price of Anarchy (PoA) and Inefficiency Gap
-- **Welfare Loss Gap:**
+### 5.3 Price of Anarchy (PoA), Price of Stability (PoS), and Inefficiency Gap
+- **Worst-Case Welfare Loss Gap:**
   $$\Delta W = W(s^{SO}) - \min_{(s_1^*, s_2^*) \in \mathcal{E}_{\text{pure}}} W(s_1^*, s_2^*)$$
-- **Price of Anarchy Ratio:**
+- **Price of Anarchy (PoA) Ratio:**
   $$PoA = \frac{W(s^{SO})}{\min_{(s_1^*, s_2^*) \in \mathcal{E}_{\text{pure}}} W(s_1^*, s_2^*)}$$
-  *(Reported when payoffs remain strictly positive; otherwise the absolute welfare gap $\Delta W$ is the academically rigorous metric).*
+- **Price of Stability (PoS) Ratio:**
+  $$PoS = \frac{W(s^{SO})}{\max_{(s_1^*, s_2^*) \in \mathcal{E}_{\text{pure}}} W(s_1^*, s_2^*)}$$
+
+### 5.4 Standardized Handling of Boundary & Degenerate Regimes
+1. **Empty Equilibrium Set ($\mathcal{E}_{\text{pure}} = \emptyset$):**
+   When no pure strategy Nash equilibrium exists, $PoA$, $PoS$, and $\Delta W$ are set to `None` to prevent spurious claims of zero welfare loss.
+2. **Zero or Negative Welfare ($\min W(s^*) \le 0$):**
+   When Nash welfare is non-positive, ratio metrics ($PoA, PoS$) are set to `None` to avoid division by zero or sign-inversion anomalies. The absolute welfare loss gap $\Delta W$ is reported as the primary metric.
+3. **Multiple Equilibria:**
+   $PoA$ reflects coordination on the least efficient equilibrium, while $PoS$ reflects coordination on the most efficient equilibrium. When $PoA > PoS = 1.0$, a coordination game exists where the socially optimal outcome is one of multiple decentralized equilibria.
