@@ -112,6 +112,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="Execute sensitivity analysis sweeping baseline vulnerability v0.",
     )
     parser.add_argument(
+        "--sweep-asymmetric-loss",
+        action="store_true",
+        help="Execute robustness sweep varying Firm 1 loss while Firm 2 loss is fixed (L2=300).",
+    )
+    parser.add_argument(
+        "--sweep-asymmetric-vulnerability",
+        action="store_true",
+        help="Execute robustness sweep varying Firm 1 vulnerability while Firm 2 vulnerability is fixed (v2=0.4).",
+    )
+    parser.add_argument(
+        "--sweep-convex-cost",
+        action="store_true",
+        help="Execute robustness sweep varying quadratic cost coefficient gamma.",
+    )
+    parser.add_argument(
         "--mode-2x2",
         action="store_true",
         help="Restrict action space to 2x2 binary choice (None vs High) to enable analytical mixed strategy solver.",
@@ -171,6 +186,18 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         return 0
     if args.sweep_vulnerability:
         sweep_res = analyzer.sweep_vulnerability()
+        print(ReportFormatter.format_sensitivity_table(sweep_res))
+        return 0
+    if args.sweep_asymmetric_loss:
+        sweep_res = analyzer.sweep_asymmetric_loss()
+        print(ReportFormatter.format_sensitivity_table(sweep_res))
+        return 0
+    if args.sweep_asymmetric_vulnerability:
+        sweep_res = analyzer.sweep_asymmetric_vulnerability()
+        print(ReportFormatter.format_sensitivity_table(sweep_res))
+        return 0
+    if args.sweep_convex_cost:
+        sweep_res = analyzer.sweep_convex_cost()
         print(ReportFormatter.format_sensitivity_table(sweep_res))
         return 0
 

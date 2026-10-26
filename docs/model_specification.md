@@ -129,3 +129,19 @@ $$u_i(x_i, x_{-i}) = \Pi_i^0 - P_i(x_i, x_{-i}) \cdot L_i - C_i(x_i)$$
 - If an organization invests $x_i > 0$:
   The investment is rational if and only if the marginal reduction in expected loss exceeds the marginal cost of defense:
   $$-\frac{\partial P_i}{\partial x_i} \cdot L_i \ge C_i'(x_i)$$
+
+---
+
+## 8. Asymmetric Organizations and Robustness Extensions
+
+While initial benchmark models feature symmetric firms ($L_1 = L_2, v_1^0 = v_2^0, c_1 = c_2$), real-world cybersecurity ecosystems frequently involve asymmetric relationships:
+1. **Asymmetric Exposure / Asset Value ($L_1 \ne L_2$):**
+   - High-loss enterprise ($L_1 \gg L_2$) vs low-loss supplier ($L_2$).
+   - In contagion models, the high-loss firm has an elevated incentive to invest ($-\frac{\partial P_1}{\partial x_1} L_1 \ge C_1'$), while the smaller partner faces lower loss exposure and free-rides, shifting the equilibrium to asymmetric profiles such as $(\text{High}, \text{Medium})$.
+2. **Asymmetric Baseline Vulnerability ($v_1^0 \ne v_2^0$):**
+   - Legacy infrastructure or higher inherent exposure in one organization increases its marginal return from initial hardening relative to a modern competitor.
+3. **Convex Implementation Friction ($\gamma_i > 0$):**
+   - Reflects organizational complexity, scarce security engineering talent, and diminishing marginal operational capacity as expenditure expands.
+   - Dampens excessive escalation in target-shifting arms races, shifting equilibria from boundary $(\text{High}, \text{High})$ to interior $(\text{Medium}, \text{Medium})$ or coordination profiles.
+
+For detailed empirical context, baseline values, literature classifications, and bounds validation, see [parameter_evidence.md](file:///c:/Users/aksha/Documents/antigravity/beautiful-pascal/docs/parameter_evidence.md).

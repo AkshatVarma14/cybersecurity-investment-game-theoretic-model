@@ -89,6 +89,7 @@ beautiful-pascal/
 │   ├── game_theory_formulation.md  # Normal-form definitions, Nash solvers, and PoA/PoS
 │   ├── model_specification.md      # Mathematical vulnerability functions and proofs
 │   ├── mathematical_audit.md       # Independent audit of clipping, MSNE, and PoA
+│   ├── parameter_evidence.md       # Parameter evidence audit, classifications & bounds
 │   └── PRESENTATION_GUIDE.md       # 5-7 min demonstration plan & viva Q&A
 ├── src/cyber_investment_sim/       # Primary Python package
 │   ├── __init__.py                 # Package declaration
@@ -112,7 +113,7 @@ beautiful-pascal/
 │       ├── __init__.py
 │       ├── formatter.py            # Pretty-printed ASCII payoff matrices & tables
 │       └── export.py               # JSON and CSV export handlers
-└── tests/                          # Automated unit test suite (46 tests)
+└── tests/                          # Automated unit test suite (49 tests)
     ├── __init__.py
     ├── test_audit.py               # Independent mathematical audit & regression tests
     ├── test_breach_model.py        # Probability bounds and externality derivative tests
@@ -162,13 +163,22 @@ python main.py --model contagion --sweep-externality
 # Run sensitivity analysis sweeping security efficiency alpha
 python main.py --model target_shifting --sweep-alpha
 
+# Run robustness sweep on asymmetric asset losses (Firm 1 loss vs fixed Firm 2 loss)
+python main.py --model contagion --sweep-asymmetric-loss
+
+# Run robustness sweep on asymmetric baseline vulnerability
+python main.py --model target_shifting --sweep-asymmetric-vulnerability
+
+# Run robustness sweep on convex implementation cost friction gamma
+python main.py --model target_shifting --sweep-convex-cost
+
 # Run in 2x2 binary mode (None vs High) for analytical mixed Nash equilibrium
 python main.py --model target_shifting --mode-2x2
 ```
 
 ### 4.3 Running Unit Tests
 ```powershell
-# Execute the complete automated unit test suite (46 tests)
+# Execute the complete automated unit test suite (49 tests)
 python -m unittest discover -s tests -v
 ```
 
@@ -215,6 +225,42 @@ Social Welfare & Inefficiency Benchmarks:
  -> Welfare Loss Gap (W_SO - min W_Nash): 4.76
 ```
 
+### 5.3 Robustness & Comparative Statics Sweeps
+
+#### Asymmetric Asset Losses (`python main.py --model contagion --sweep-asymmetric-loss`)
+Demonstrates strategic interaction between a high-exposure enterprise ($L_1 \in [200, 1000]$) and a smaller partner ($L_2 = 300$):
+```text
+==============================================================================================================
+ SENSITIVITY ANALYSIS SWEEP: Parameter 'firm1_loss (L2=300)'
+==============================================================================================================
+Firm1 loss (l2=300)   | Nash Profile       | #Eq  | Worst Nash W | Opt W      | PoA      | PoS      | Gap
+--------------------------------------------------------------------------------------------------------------
+200.0                 | (Low, Medium)      | 1    |    1729.44   |  1741.63   | 1.0070   | 1.0070   |   12.19
+400.0                 | (Medium, Medium)   | 1    |    1678.29   |  1678.29   | 1.0000   | 1.0000   |    0.00
+600.0                 | (High, Medium)     | 1    |    1626.57   |  1628.00   | 1.0009   | 1.0009   |    1.43
+800.0                 | (High, Medium)     | 1    |    1580.10   |  1589.78   | 1.0061   | 1.0061   |    9.68
+1000.0                | (High, Medium)     | 1    |    1533.62   |  1551.56   | 1.0117   | 1.0117   |   17.94
+==============================================================================================================
+```
+*Insight:* As enterprise loss exposure $L_1$ scales upward, Firm 1 unilaterally steps up to `High` defense to limit enterprise risk, while Firm 2 free-rides at `Medium`, widening the social welfare gap from $1.43 to $17.94.
+
+#### Convex Cost Friction (`python main.py --model target_shifting --sweep-convex-cost`)
+Demonstrates how implementation friction ($\gamma \in [0.0, 0.04]$) disciplines target-shifting arms races:
+```text
+============================================================================================================
+ SENSITIVITY ANALYSIS SWEEP: Parameter 'convex_cost_gamma'
+============================================================================================================
+Convex cost gamma   | Nash Profile       | #Eq  | Worst Nash W | Opt W      | PoA      | PoS      | Gap
+------------------------------------------------------------------------------------------------------------
+0.0                 | (High, High)       | 1    |    1666.67   |  1671.43   | 1.0029   | 1.0029   |    4.76
+0.005               | (M,M), (H,H)       | 2    |    1566.67   |  1646.43   | 1.0509   | 1.0000   |   79.76
+0.01                | (Medium, Medium)   | 1    |    1621.43   |  1621.43   | 1.0000   | 1.0000   |    0.00
+0.02                | (Medium, Medium)   | 1    |    1571.43   |  1571.43   | 1.0000   | 1.0000   |    0.00
+0.04                | (L,L), (M,M)       | 2    |    1471.43   |  1544.44   | 1.0496   | 1.0000   |   73.02
+============================================================================================================
+```
+*Insight:* Without friction ($\gamma = 0$), firms escalate to `(High, High)`. At $\gamma = 0.005$, a coordination game emerges with two pure equilibria `(Medium, Medium)` and `(High, High)`, generating a Price of Anarchy of $1.0509$. At $\gamma \ge 0.01$, costs discipline escalation to `(Medium, Medium)`.
+
 ---
 
 ## 6. Key Features & Implementation Highlights
@@ -223,6 +269,7 @@ Social Welfare & Inefficiency Benchmarks:
 - **Multi-Equilibrium Detection:** Identifies all pure Nash equilibria, correctly computing both the Price of Anarchy (worst-case Nash) and the Price of Stability (best-case Nash).
 - **Exact Analytical MSNE:** Derives closed-form mixed strategy Nash equilibria for $2 \times 2$ action spaces using the indifference principle.
 - **Robust Boundary Handling:** Formally handles negative welfare regimes and games with no pure Nash equilibria without spurious zero-gap reports.
+- **Audited Parameter Evidence:** Every simulation parameter is cataloged in `docs/parameter_evidence.md` with explicit literature citations (Gordon-Loeb 2002, Kunreuther-Heal 2003, Tullock 1980), bounds justification, and academic disclaimers.
 
 ---
 

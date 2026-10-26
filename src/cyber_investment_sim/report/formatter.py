@@ -127,13 +127,23 @@ class ReportFormatter:
     @staticmethod
     def format_sensitivity_table(sweep: SensitivitySweepResult) -> str:
         """Render sensitivity sweep comparative statics as an ASCII table."""
+        param_label = sweep.parameter_name.replace("_", " ").capitalize()
+        param_width = max(14, len(param_label) + 2)
+        profile_width = 18
+
+        header = (
+            f"{param_label:<{param_width}} | {'Nash Profile':<{profile_width}} | "
+            f"{'#Eq':<4} | {'Worst Nash W':<12} | {'Opt W':<10} | {'PoA':<8} | {'PoS':<8} | {'Gap':<8}"
+        )
+        total_width = len(header)
+        sep = "-" * total_width
+
         lines = []
-        lines.append("=" * 94)
+        lines.append("=" * total_width)
         lines.append(f" SENSITIVITY ANALYSIS SWEEP: Parameter '{sweep.parameter_name}'")
-        lines.append("=" * 94)
-        header = f"{sweep.parameter_name.capitalize():<12} | {'Nash (x1, x2)':<16} | {'#Eq':<4} | {'Worst Nash W':<12} | {'Opt W':<10} | {'PoA':<8} | {'PoS':<8} | {'Gap':<8}"
+        lines.append("=" * total_width)
         lines.append(header)
-        lines.append("-" * len(header))
+        lines.append(sep)
 
         m = sweep.metrics
         for i, val in enumerate(sweep.parameter_values):
@@ -146,17 +156,34 @@ class ReportFormatter:
             pos = m["pos"][i]
             gap = m["welfare_gap"][i]
 
-            x_str = f"({x1:.0f}, {x2:.0f})" if x1 is not None and x2 is not None else "No PSNE"
+            if i < len(sweep.profile_labels) and sweep.profile_labels[i]:
+                x_str = sweep.profile_labels[i]
+            elif x1 is not None and x2 is not None:
+                x_str = f"({x1:.0f}, {x2:.0f})"
+            else:
+                x_str = "No PSNE"
+
             nw_str = f"{min_nw:10.2f}" if min_nw is not None else "   N/A    "
             ow_str = f"{ow:8.2f}" if ow is not None else "   N/A  "
             poa_str = f"{poa:6.4f}" if poa is not None else " N/A  "
             pos_str = f"{pos:6.4f}" if pos is not None else " N/A  "
             gap_str = f"{gap:7.2f}" if gap is not None else " N/A  "
 
-            row = f"{val:<12.2f} | {x_str:<16} | {num_eq:<4} | {nw_str:<12} | {ow_str:<10} | {poa_str:<8} | {pos_str:<8} | {gap_str:<8}"
+            # Format float nicely depending on scale
+            if 0.0 < abs(val) < 0.01:
+                val_fmt = f"{val:<{param_width}.3f}"
+            elif val == int(val):
+                val_fmt = f"{val:<{param_width}.1f}"
+            else:
+                val_fmt = f"{val:<{param_width}.2f}"
+
+            row = (
+                f"{val_fmt} | {x_str:<{profile_width}} | {num_eq:<4} | "
+                f"{nw_str:<12} | {ow_str:<10} | {poa_str:<8} | {pos_str:<8} | {gap_str:<8}"
+            )
             lines.append(row)
 
-        lines.append("=" * 94)
+        lines.append("=" * total_width)
         lines.append("Conventions: PoA = Opt W / min(Nash W). PoS = Opt W / max(Nash W). Gap = Opt W - min(Nash W).")
-        lines.append("=" * 94)
+        lines.append("=" * total_width)
         return "\n".join(lines)
