@@ -90,6 +90,7 @@ beautiful-pascal/
 │   ├── model_specification.md      # Mathematical vulnerability functions and proofs
 │   ├── mathematical_audit.md       # Independent audit of clipping, MSNE, and PoA
 │   ├── parameter_evidence.md       # Parameter evidence audit, classifications & bounds
+│   ├── visualization_guide.md      # Detailed figure guide, interpretation & limitations
 │   └── PRESENTATION_GUIDE.md       # 5-7 min demonstration plan & viva Q&A
 ├── src/cyber_investment_sim/       # Primary Python package
 │   ├── __init__.py                 # Package declaration
@@ -112,8 +113,9 @@ beautiful-pascal/
 │   └── report/                     # Reporting & presentation
 │       ├── __init__.py
 │       ├── formatter.py            # Pretty-printed ASCII payoff matrices & tables
+│       ├── visualizer.py           # Publication-quality academic figure generator
 │       └── export.py               # JSON and CSV export handlers
-└── tests/                          # Automated unit test suite (49 tests)
+└── tests/                          # Automated unit test suite (57 tests)
     ├── __init__.py
     ├── test_audit.py               # Independent mathematical audit & regression tests
     ├── test_breach_model.py        # Probability bounds and externality derivative tests
@@ -123,7 +125,8 @@ beautiful-pascal/
     ├── test_sensitivity.py         # Comparative statics sweep engine tests
     ├── test_simulation_engine.py   # Multi-model simulation engine tests
     ├── test_social_optimum.py      # Social welfare and PoA benchmark tests
-    └── test_solver.py              # Pure and mixed Nash equilibrium verification tests
+    ├── test_solver.py              # Pure and mixed Nash equilibrium verification tests
+    └── test_visualizer.py          # Publication visualizer and figure generation tests
 ```
 
 ---
@@ -174,11 +177,14 @@ python main.py --model target_shifting --sweep-convex-cost
 
 # Run in 2x2 binary mode (None vs High) for analytical mixed Nash equilibrium
 python main.py --model target_shifting --mode-2x2
+
+# Generate all 6 publication-quality figures (PNG at 300 DPI and scalable SVG)
+python main.py --generate-figures
 ```
 
 ### 4.3 Running Unit Tests
 ```powershell
-# Execute the complete automated unit test suite (49 tests)
+# Execute the complete automated unit test suite (57 tests)
 python -m unittest discover -s tests -v
 ```
 
@@ -270,6 +276,7 @@ Convex cost gamma   | Nash Profile       | #Eq  | Worst Nash W | Opt W      | Po
 - **Exact Analytical MSNE:** Derives closed-form mixed strategy Nash equilibria for $2 \times 2$ action spaces using the indifference principle.
 - **Robust Boundary Handling:** Formally handles negative welfare regimes and games with no pure Nash equilibria without spurious zero-gap reports.
 - **Audited Parameter Evidence:** Every simulation parameter is cataloged in `docs/parameter_evidence.md` with explicit literature citations (Gordon-Loeb 2002, Kunreuther-Heal 2003, Tullock 1980), bounds justification, and academic disclaimers.
+- **Publication-Quality Visual Analysis:** Deterministic, headless generator in `SimulationVisualizer` (`--generate-figures`) producing 6 publication figures in both 300 DPI raster PNG and scalable vector SVG, accompanied by an exhaustive interpretation guide in `docs/visualization_guide.md`.
 
 ---
 

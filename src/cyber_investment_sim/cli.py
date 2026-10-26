@@ -131,6 +131,17 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Restrict action space to 2x2 binary choice (None vs High) to enable analytical mixed strategy solver.",
     )
+    parser.add_argument(
+        "--generate-figures",
+        action="store_true",
+        help="Generate all 6 publication-quality visual analysis figures (PNG & SVG) in the output directory.",
+    )
+    parser.add_argument(
+        "--figures-dir",
+        type=str,
+        default="figures",
+        help="Target directory for saving generated figures (default: figures).",
+    )
 
     return parser
 
@@ -167,6 +178,17 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         return 1
 
     print(EMPIRICAL_DISCLAIMER)
+
+    # 0. Publication Figure Generation Mode
+    if args.generate_figures:
+        from cyber_investment_sim.report.visualizer import SimulationVisualizer
+
+        visualizer = SimulationVisualizer(output_dir=args.figures_dir)
+        paths = visualizer.generate_all_figures(config)
+        print(f"\n[SUCCESS] Generated {len(paths)} publication figures in directory '{args.figures_dir}/':")
+        for p in paths:
+            print(f"  - {p.name} ({p.stat().st_size:,} bytes)")
+        return 0
 
     # 1. Cross-Model Comparison Mode
     if args.compare_models:
