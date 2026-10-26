@@ -67,6 +67,8 @@ class ReportFormatter:
             lines.append(" -> Mixed Strategy Nash Equilibrium (MSNE):")
             lines.append(f"    * Firm 1 Mixed Strategy: {s1_str}")
             lines.append(f"    * Firm 2 Mixed Strategy: {s2_str}")
+        elif len(summary.game.strategies_1) == 2 and len(summary.game.strategies_2) == 2:
+            lines.append(" -> Mixed Strategy Nash Equilibrium (MSNE): None in interior (0, 1) (pure strategies are strictly dominant).")
 
         so = summary.social_result
         lines.append("-" * 80)

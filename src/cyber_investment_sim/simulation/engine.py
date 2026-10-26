@@ -96,7 +96,10 @@ class SimulationEngine:
 
         # Default: Semantic tiers
         levels = self.config.discrete_investment_levels
-        labels = ["None", "Low", "Medium", "High", "Critical", "Max"]
+        if len(levels) == 2:
+            labels = ["None", "High"]
+        else:
+            labels = ["None", "Low", "Medium", "High", "Critical", "Max"]
         actions: List[Tuple[str, float]] = []
         for i, val in enumerate(levels):
             lbl = labels[i] if i < len(labels) else f"Tier_{i}"
