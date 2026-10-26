@@ -1,0 +1,7 @@
+# Core Simulation Dependencies
+# The core mathematical simulation and game-theoretic solver rely strictly on Python's Standard Library:
+# (dataclasses, typing, enum, math, json, csv, argparse, unittest)
+# No external dependencies are required to run the core simulation or test suite.
+
+# Optional Visualization Dependencies (for academic plots, best-response curves, sensitivity heatmaps):
+matplotlib>=3.8.0

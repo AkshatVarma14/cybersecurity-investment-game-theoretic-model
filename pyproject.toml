@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cyber-investment-sim"
+version = "0.1.0"
+description = "A Game-Theoretic Model for Cybersecurity Investment Between Competing Organizations"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Game Theory Project Team" }
+]
+keywords = ["game-theory", "cybersecurity", "nash-equilibrium", "simulation", "economics"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = []
+
+[project.optional-dependencies]
+plot = [
+    "matplotlib>=3.8.0",
+]
+dev = [
+    "matplotlib>=3.8.0",
+]
+
+[project.scripts]
+cyber-sim = "cyber_investment_sim.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
