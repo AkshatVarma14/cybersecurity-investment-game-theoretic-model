@@ -73,28 +73,24 @@ Cross-firm externalities are absent ($\theta = 0, q = 0$). Decentralized Nash op
 ## 3. Directory Layout & Architecture
 
 ```text
-beautiful-pascal/
-├── .gitignore                      # Git exclusion rules for caches, artifacts, and venv
-├── pyproject.toml                  # PEP 517/518 packaging metadata
-├── requirements.txt                # Optional dependencies (matplotlib for optional plotting)
+cybersecurity-investment-game/
+├── .gitignore                      # Git exclusion rules for caches, artifacts, and local documents
+├── LICENSE                         # MIT License
+├── pyproject.toml                  # PEP 517/518 packaging metadata and CLI entrypoint
+├── requirements.txt                # Optional dependencies (matplotlib for figure rendering)
 ├── main.py                         # Root execution launcher
-├── README.md                       # Academic project overview, equations, and guide
-├── AGENTS.md                       # Developer guidelines and technical constraints
-├── PROJECT_INSTRUCTIONS.md         # Windows PowerShell and VS Code operating guide
+├── README.md                       # Academic project overview, equations, setup, and usage guide
 ├── .vscode/                        # Example IDE configurations
 │   ├── launch.json.example         # VS Code debugger profiles
 │   └── settings.json.example       # VS Code interpreter and test settings
-├── docs/                           # Academic documentation
-│   ├── architecture.md             # System design, interfaces, and data flow
+├── docs/                           # Technical and mathematical documentation
+│   ├── architecture.md             # System design, interfaces, and modular data flow
 │   ├── game_theory_formulation.md  # Normal-form definitions, Nash solvers, and PoA/PoS
 │   ├── model_specification.md      # Mathematical vulnerability functions and proofs
 │   ├── mathematical_audit.md       # Independent audit of clipping, MSNE, and PoA
 │   ├── parameter_evidence.md       # Parameter evidence audit, classifications & bounds
-│   ├── visualization_guide.md      # Detailed figure guide, interpretation & limitations
-│   ├── PRESENTATION_GUIDE.md       # Initial demonstration plan & viva Q&A
-│   ├── final_report.md             # Formal comprehensive academic course report
-│   └── final_presentation_guide.md # 5-7 min demonstration plan & 12 viva Q&As
-├── src/cyber_investment_sim/       # Primary Python package
+│   └── visualization_guide.md      # Detailed figure guide, interpretation & limitations
+├── src/cyber_investment_sim/       # Primary Python package (100% Standard Library core)
 │   ├── __init__.py                 # Package declaration
 │   ├── cli.py                      # Command-line interface parser
 │   ├── config.py                   # Immutable configuration dataclasses with validation
@@ -133,39 +129,73 @@ beautiful-pascal/
 
 ---
 
-## 4. Quick Start (Windows PowerShell)
+## 4. Installation & Quick Start
 
-### 4.1 Environment Setup
+### 4.1 Prerequisites
+- **Python:** Python 3.10 or higher (verified on Python 3.10, 3.11, 3.12, and 3.14).
+- **Core Dependencies:** **None.** The core simulation engine, normal-form game representations, Nash equilibrium solvers, social optimum analyzers, and test suite rely strictly on Python's built-in Standard Library (`dataclasses`, `typing`, `enum`, `math`, `json`, `csv`, `unittest`, `argparse`).
+- **Optional Dependencies:** `matplotlib>=3.8.0` is required only if you wish to generate the six publication figures (`--generate-figures`). The core simulation executes cleanly without `matplotlib`.
+
+---
+
+### 4.2 Clone and Setup Environment
+
+#### Windows (PowerShell)
 ```powershell
-# 1. Navigate to project root
-cd cybersecurity-investment-game
+# 1. Clone the repository
+git clone https://github.com/AkshatVarma14/cybersecurity-investment-game-theoretic-model.git
+cd cybersecurity-investment-game-theoretic-model
 
-# 2. Create isolated virtual environment
+# 2. Create an isolated virtual environment
 python -m venv .venv
 
-# 3. Activate virtual environment
+# 3. Activate the virtual environment
 .\.venv\Scripts\Activate.ps1
+# If PowerShell script execution is restricted, temporarily permit via:
+# Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+
+# 4. (Optional) Install matplotlib for publication figure generation
+pip install -r requirements.txt
 ```
 
-### 4.2 Running Simulations
-```powershell
-# Display help and available options
+#### macOS and Linux (bash / zsh)
+```bash
+# 1. Clone the repository
+git clone https://github.com/AkshatVarma14/cybersecurity-investment-game-theoretic-model.git
+cd cybersecurity-investment-game-theoretic-model
+
+# 2. Create an isolated virtual environment
+python3 -m venv .venv
+
+# 3. Activate the virtual environment
+source .venv/bin/activate
+
+# 4. (Optional) Install matplotlib for publication figure generation
+pip install -r requirements.txt
+```
+
+---
+
+### 4.3 Running Simulations
+
+```bash
+# Display CLI help and configuration flags
 python main.py --help
 
-# Run default single-scenario simulation (Target-Shifting)
+# Run default single-scenario simulation (Target-Shifting Model)
 python main.py
 
-# Run Contagion model scenario
+# Run Interdependent Contagion model scenario
 python main.py --model contagion
 
 # Run side-by-side comparison across all 3 models under identical parameters
 python main.py --compare-models
 
-# Run sensitivity analysis sweeping externality parameter (theta / q)
+# Run sensitivity sweep on attacker deflection / contagion strength (theta / q)
 python main.py --model target_shifting --sweep-externality
 python main.py --model contagion --sweep-externality
 
-# Run sensitivity analysis sweeping security efficiency alpha
+# Run sensitivity sweep on defense efficiency alpha
 python main.py --model target_shifting --sweep-alpha
 
 # Run robustness sweep on asymmetric asset losses (Firm 1 loss vs fixed Firm 2 loss)
@@ -184,8 +214,11 @@ python main.py --model target_shifting --mode-2x2
 python main.py --generate-figures
 ```
 
-### 4.3 Running Unit Tests
-```powershell
+---
+
+### 4.4 Running Automated Tests
+
+```bash
 # Execute the complete automated unit test suite (57 tests)
 python -m unittest discover -s tests -v
 ```

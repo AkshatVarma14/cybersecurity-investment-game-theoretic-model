@@ -88,3 +88,26 @@ figures/*.png
 figures/*.pdf
 figures/*.svg
 *.log
+
+# Local AI instructions and developer prompt specifications
+AGENTS.md
+PROJECT_INSTRUCTIONS.md
+*.agent.md
+*.prompt.md
+
+# Academic course submissions, office documents, and temporary binaries
+*.docx
+*.pptx
+*.xlsx
+Cybersecurity_Investment_Game_Theory_Report*
+
+# Report generation automation and inspection page renders
+build_final_report.py
+export_pdf.ps1
+render_pdf.ps1
+inspection_pages/
+
+# Local archives and private notes (if placed inside workspace)
+*Archive*/
+*archive*/
+notes/
